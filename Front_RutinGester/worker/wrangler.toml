@@ -1,0 +1,9 @@
+name = "rutinger-chat"
+main = "src/index.ts"
+compatibility_date = "2025-11-10"
+
+[ai]
+binding = "AI"
+
+[build]
+external = ["@cloudflare/ai"]

@@ -4,8 +4,7 @@ import {
   listarEjercicios,
   obtenerEjercicio,
   actualizarEjercicio,
-  eliminarEjercicio,
-  asociarARutina
+  eliminarEjercicio
 } from '../controllers/ejercicio.controller.js';
 
 const router = express.Router();
@@ -17,6 +16,8 @@ router.put('/:id', actualizarEjercicio);
 router.delete('/:id', eliminarEjercicio);
 
 // Endpoint espejo: asociar ejercicio a rutina (por conveniencia)
-router.post('/:ejercicioId/rutinas', asociarARutina);
+// La función 'asociarARutina' no existe en el controlador. Se comenta para evitar el crash.
+// La funcionalidad principal para esto ya está en rutina.routes.js
+// router.post('/:ejercicioId/rutinas', asociarARutina);
 
 export default router;

@@ -1,0 +1,13 @@
+{
+  "name": "rutinger-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@cloudflare/ai": "^1.0.44"
+  }
+}

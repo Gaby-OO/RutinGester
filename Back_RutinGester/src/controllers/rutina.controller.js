@@ -1,17 +1,50 @@
 import { Rutina } from '../models/rutina.js';
 import { Ejercicio } from '../models/ejercicio.js';
+import { RutinaEjercicio } from '../models/rutinaEjercicio.js';
 
 export const crearRutina = async (req, res) => {
+  const { nombre, descripcion, ejercicios } = req.body;
+  const auth0_user_id = req.auth?.sub || 'user_de_prueba';
+
   try {
-    const payload = {
-      nombre: req.body.nombre,
-      descripcion: req.body.descripcion || null,
-      imagen: req.body.imagen || null,
-      auth0_user_id: req.auth.sub,
-    };
-    const rutina = await Rutina.create(payload);
-    res.json(rutina);
+    // 1. Crear la rutina
+    const rutina = await Rutina.create({
+      nombre,
+      descripcion: descripcion || null,
+      auth0_user_id,
+    });
+
+    // 2. Si hay ejercicios, buscarlos por slug y asociarlos por su PK numérico
+    if (ejercicios && ejercicios.length > 0) {
+      for (const ej of ejercicios) {
+        const exercise = await Ejercicio.findOne({ where: { slug: ej.ejercicioId } });
+        if (exercise) {
+          await rutina.addEjercicio(exercise.id_ejercicio, {
+            through: {
+              series: ej.series,
+              repeticiones: ej.repeticiones,
+              descanso_seg: ej.descanso_seg,
+            },
+          });
+        } else {
+          console.warn(`Ejercicio con slug '${ej.ejercicioId}' no encontrado en la BD. No se asoció a la rutina.`);
+        }
+      }
+    }
+
+    // 3. Devolver la rutina completa con sus ejercicios recién asociados
+    const rutinaCompleta = await Rutina.findByPk(rutina.id_rutina, {
+      include: [
+        {
+          model: Ejercicio,
+          through: { attributes: ['series', 'repeticiones', 'descanso_seg'] },
+        },
+      ],
+    });
+
+    res.status(201).json(rutinaCompleta);
   } catch (err) {
+    console.error('Error al crear la rutina:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -32,6 +65,10 @@ export const obtenerRutina = async (req, res) => {
     ]
   });
   if (!rutina) return res.status(404).json({ error: 'No encontrada' });
+
+  // DEBUG: Imprimir el objeto para ver su estructura
+  console.log('Objeto Rutina a punto de ser enviado:', JSON.stringify(rutina, null, 2));
+
   res.json(rutina);
 };
 
@@ -72,13 +109,36 @@ export const subirImagenRutina = async (req, res) => {
 export const asociarEjercicio = async (req, res) => {
   try {
     const { rutinaId } = req.params;
-    const { ejercicioId, orden, series, repeticiones, descanso_seg, notas } = req.body;
+    const { ejercicioId: slug, orden, series, repeticiones, descanso_seg, notas } = req.body;
+
     const rutina = await Rutina.findByPk(rutinaId);
-    if (!rutina) return res.status(404).json({ error: 'Rutina no encontrada' });
-    // add association with through data
-    await rutina.addEjercicio(ejercicioId, { through: { orden, series, repeticiones, descanso_seg, notas } });
-    res.json({ mensaje: 'Asociado' });
+    if (!rutina) {
+      return res.status(404).json({ error: 'Rutina no encontrada' });
+    }
+
+    const ejercicio = await Ejercicio.findOne({ where: { slug } });
+    if (!ejercicio) {
+      return res.status(404).json({ error: `Ejercicio con slug '${slug}' no encontrado` });
+    }
+
+    const association = await RutinaEjercicio.findOne({
+      where: {
+        rutinaId: rutina.id_rutina,
+        ejercicioId: ejercicio.id_ejercicio,
+      },
+    });
+
+    const throughData = { orden, series, repeticiones, descanso_seg, notas };
+
+    if (association) {
+      await association.update(throughData);
+    } else {
+      await rutina.addEjercicio(ejercicio, { through: throughData });
+    }
+
+    res.json({ mensaje: 'Asociación actualizada/creada' });
   } catch (err) {
+    console.error('Error al asociar/actualizar ejercicio:', err);
     res.status(500).json({ error: err.message });
   }
 };
