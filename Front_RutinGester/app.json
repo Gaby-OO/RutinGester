@@ -22,6 +22,19 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
+      ,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "rutingester",
+              "pathPrefix": "/redirect"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "output": "static",
@@ -40,7 +53,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]    ],
+      ]
+    ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
@@ -49,7 +63,11 @@
       "EXPO_PUBLIC_AUTH0_DOMAIN": "dev-7pxa31t5xukwx40p.us.auth0.com",
       "EXPO_PUBLIC_AUTH0_CLIENT_ID": "zfZtqu6ZeydeFJ9AWXBrcLLuFUh7BNbX",
       "EXPO_PUBLIC_AUTH0_AUDIENCE": "https://dev-7pxa31t5xukwx40p.us.auth0.com/api/v2/",
-   "EXPO_PUBLIC_AI_ENDPOINT": "https://rutinger-chat.mp326246.workers.dev"
+      "EXPO_PUBLIC_AI_ENDPOINT": "https://rutinger-chat.mp326246.workers.dev",
+      "router": {},
+      "eas": {
+        "projectId": "306eb36b-8de7-48ea-8458-2b9e6f1d80fc"
+      }
     }
   }
 }
