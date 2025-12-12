@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "0b18fc0d-43a1-4807-bedb-ff23a500d500"
+      }
+    },
+    "android": {
+      "package": "com.gabote08.rutingester"
+    }
+  }
+}

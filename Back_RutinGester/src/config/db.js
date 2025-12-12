@@ -8,7 +8,20 @@ let sequelize;
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    ssl: process.env.NODE_ENV === 'production' ? { require: true, rejectUnauthorized: false } : false,
+    dialectOptions: process.env.NODE_ENV === 'production'
+      ? {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        }
+      : {},
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
   });
 } else {
   // Si no, usar las variables individuales (desarrollo local)

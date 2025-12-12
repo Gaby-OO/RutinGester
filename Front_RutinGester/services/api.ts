@@ -7,7 +7,8 @@ import { Platform } from 'react-native';
 // En tu computadora, abre la terminal y escribe `ipconfig` (Windows) o `ifconfig` (macOS/Linux)
 // para encontrar tu dirección IP (ej. 192.168.1.100).
 // Reemplaza 'TU_IP_LOCAL' con esa dirección.
-const API_BASE_URL = 'http://128.3.247.203:3000'; 
+// En producción apuntar al backend desplegado en Render:
+const API_BASE_URL = 'https://rutingester-backend.onrender.com'; 
 
 const api = axios.create({
   baseURL: API_BASE_URL,

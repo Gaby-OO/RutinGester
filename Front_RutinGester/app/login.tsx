@@ -37,7 +37,7 @@ export default function LoginScreen() {
   const issuer = domain ? `https://${domain}` : undefined;
   const redirectUri = Platform.select({
     web: AuthSession.makeRedirectUri(),
-    default: AuthSession.makeRedirectUri({ scheme: "rutingester" }),
+    default: AuthSession.makeRedirectUri({ scheme: "rutingester", path: "redirect" }),
   });
 
   useEffect(() => {
